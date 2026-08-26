@@ -15,7 +15,7 @@ export function Tabela() {
 
   return (
     <Section>
-      <EurocourtPromo line="Standings tell you who is winning. Eurocourt's AI tells you which of their players is worth owning." />
+      <EurocourtPromo />
 
       <Head title="EuroLeague table" />
 

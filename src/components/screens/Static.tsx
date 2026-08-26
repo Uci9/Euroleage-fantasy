@@ -10,7 +10,7 @@ export function HowItWorks({ go }: { go: (t: string) => void }) {
       </div>
       <p className="lead" style={{ marginBottom: 16 }}>{HOW.intro}</p>
 
-      <EurocourtPromo line="Picking the squad is the hard part. Eurocourt's AI does the reading for you and explains every call." />
+      <EurocourtPromo />
 
       <div className="cards">
         {HOW.steps.map((s, i) => (
@@ -48,7 +48,7 @@ export function Rules({ go }: { go: (t: string) => void }) {
       </section>
 
       <section className="sec">
-        <EurocourtPromo line="Four trades a season is not many. Eurocourt's AI weighs each one against the fixtures before you spend it." />
+        <EurocourtPromo />
         <div className="sec__bar"><h2>The rules</h2></div>
         <div className="panel">
           <ol className="rules">

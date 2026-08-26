@@ -14,7 +14,7 @@ export function Live() {
 
   return (
     <>
-      <EurocourtPromo line="See how each club defends your position before the next round, not after it." />
+      <EurocourtPromo />
 
       <Section>
         <Head title="Live now" />

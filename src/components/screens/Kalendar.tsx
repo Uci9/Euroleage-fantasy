@@ -22,7 +22,7 @@ export function Kalendar() {
 
   return (
     <Section>
-      <EurocourtPromo line="Know which of the next three games actually favour your players, round by round." />
+      <EurocourtPromo />
 
       <Head title="Schedule" />
 

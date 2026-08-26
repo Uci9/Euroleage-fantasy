@@ -322,21 +322,23 @@ form.panel { padding: 16px; }
    Reads as a suggestion rather than a banner: same panel as the content
    around it, with the orange rule the section headings already use. */
 .promo {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 13px;
   background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
-  padding: 13px 14px 13px 0; margin-bottom: 20px;
+  padding: 15px 14px 15px 0; margin-bottom: 20px;
   text-decoration: none; color: var(--paint);
   transition: border-color .14s ease, background .14s ease;
 }
 .promo:hover { border-color: var(--orange); background: rgba(244,121,32,.05); }
 .promo__bar { width: 3px; align-self: stretch; background: var(--orange); flex-shrink: 0; }
-.promo__body { display: grid; gap: 3px; min-width: 0; flex: 1; }
-.promo__kicker {
-  font-family: 'JetBrains Mono', monospace; font-size: 8.5px; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--orange);
+.promo__body { display: grid; min-width: 0; flex: 1; }
+/* The name carries the promo, so it is set in the display face at a size that
+   reads as a brand rather than as a label above one. */
+.promo__title {
+  font-family: 'Anton', sans-serif; font-size: 22px; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--orange); line-height: 1.05;
 }
-.promo__title { font-weight: 700; font-size: 14.5px; line-height: 1.25; }
-.promo__line { color: var(--paint-dim); font-size: 12.5px; line-height: 1.45; }
+.promo__line { font-size: 13.5px; line-height: 1.4; margin-top: 4px; }
+.promo__extra { color: var(--paint-dim); font-size: 12px; line-height: 1.45; margin-top: 3px; }
 .promo__go { color: var(--orange); font-size: 22px; line-height: 1; flex-shrink: 0; }
 
 /* ── Bottom nav ── */

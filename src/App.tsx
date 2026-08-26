@@ -66,7 +66,7 @@ function Home({ go }: { go: (t: Tab) => void }) {
         </section>
       )}
 
-      <EurocourtPromo line="An AI that reads form, matchups, minutes and injuries, then tells you who to keep and who to trade." />
+      <EurocourtPromo />
 
       {next && (
         <section className="sec">
