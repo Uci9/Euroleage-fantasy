@@ -358,8 +358,17 @@ form.panel { padding: 16px; }
 
 .foot {
   text-align: center; color: var(--paint-dim); font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; letter-spacing: 1.2px; padding: 26px 12px 0; opacity: .6; line-height: 2;
+  font-size: 9px; letter-spacing: 1.2px; padding: 26px 12px 0; line-height: 2;
 }
+.foot p { opacity: .6; }
+/* The credit sits a step brighter than the disclaimer above it — it is a
+   signature, not small print. */
+.foot__by {
+  margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line);
+  opacity: 1; color: var(--paint-dim);
+}
+.foot__by a { color: var(--orange); text-decoration: none; }
+.foot__by a:hover { text-decoration: underline; }
 
 /* ── Wider screen ── */
 @media (min-width: 820px) {

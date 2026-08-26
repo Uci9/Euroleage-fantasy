@@ -175,10 +175,18 @@ export default function App() {
         {tab === 'account' && <AccountScreen go={go as (t: string) => void} />}
         {tab === 'admin' && <AdminScreen />}
 
-        <p className="foot">
-          {BRAND.name} — independent fantasy league<br />
-          Not affiliated with EuroLeague Basketball.
-        </p>
+        {/* The footer sits inside <main>, so it renders under every screen —
+            one place to change, and no page can be missed. */}
+        <footer className="foot">
+          <p>
+            {BRAND.name} — independent fantasy league<br />
+            Not affiliated with EuroLeague Basketball.
+          </p>
+          <p className="foot__by">
+            This site was made by{' '}
+            <a href="https://eurocourt.net" target="_blank" rel="noopener noreferrer">eurocourt.net</a>
+          </p>
+        </footer>
       </main>
 
       <nav className="bottom">
