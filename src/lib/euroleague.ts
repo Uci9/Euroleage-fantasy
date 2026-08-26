@@ -97,6 +97,11 @@ export function buildTable(games: Game[]): TableRow[] {
     return row;
   };
 
+  // Every club in the competition gets a row, whether it has played or not.
+  // Before the season starts that is a full table of 0-0 — which is what a
+  // league table looks like in September, and more use than an empty panel.
+  for (const club of clubsFrom(games)) ensure(club);
+
   for (const g of games) {
     if (!g.played || g.homeScore == null || g.awayScore == null) continue;
     const home = ensure(g.home);
@@ -110,6 +115,9 @@ export function buildTable(games: Game[]): TableRow[] {
     else { away.wins++; home.losses++; }
   }
 
+  // Wins, then points difference, then name. The last one matters more than it
+  // looks: before a ball is thrown up every club is level, and without it the
+  // table would reorder itself on every render.
   return [...rows.values()].sort(
     (a, b) =>
       b.wins - a.wins ||

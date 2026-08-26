@@ -1,5 +1,5 @@
 import { useGames } from '../../lib/useGames';
-import { buildTable, clubsFrom } from '../../lib/euroleague';
+import { buildTable } from '../../lib/euroleague';
 import { Crest } from '../Crest';
 import { Head, Section } from '../Shared';
 
@@ -10,19 +10,21 @@ export function Tabela() {
   if (!games) return <p className="note">Loading</p>;
 
   const rows = buildTable(games);
+  const played = games.filter(g => g.played).length;
 
   return (
     <Section>
       <Head title="EuroLeague table" />
 
+      {played === 0 && (
+        <p className="lead" style={{ marginBottom: 12 }}>
+          The season has not started yet. All {rows.length} clubs start level; the table
+          fills itself as games are played.
+        </p>
+      )}
+
       {rows.length === 0 ? (
-        <div className="panel">
-          <p className="note">
-            The season has not started, so there are no played games and no table yet.
-            <br /><br />
-            {clubsFrom(games).length} clubs are in the competition. The table fills itself once games are played.
-          </p>
-        </div>
+        <div className="panel"><p className="note">No clubs found.</p></div>
       ) : (
         <div className="panel">
           <div className="thead"><span>#</span><span /><span>Team</span><span>W</span><span>L</span><span>PCT</span></div>
