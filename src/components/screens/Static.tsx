@@ -1,4 +1,5 @@
 import { ABOUT, HOW, RULES } from '../../lib/content';
+import { EurocourtPromo } from '../EurocourtPromo';
 
 export function HowItWorks({ go }: { go: (t: string) => void }) {
   return (
@@ -8,6 +9,9 @@ export function HowItWorks({ go }: { go: (t: string) => void }) {
         <h2>How it works</h2>
       </div>
       <p className="lead" style={{ marginBottom: 16 }}>{HOW.intro}</p>
+
+      <EurocourtPromo line="Picking the squad is the hard part. Eurocourt's AI does the reading for you and explains every call." />
+
       <div className="cards">
         {HOW.steps.map((s, i) => (
           <div className="panel step" key={s.title}>
@@ -44,6 +48,7 @@ export function Rules({ go }: { go: (t: string) => void }) {
       </section>
 
       <section className="sec">
+        <EurocourtPromo line="Four trades a season is not many. Eurocourt's AI weighs each one against the fixtures before you spend it." />
         <div className="sec__bar"><h2>The rules</h2></div>
         <div className="panel">
           <ol className="rules">

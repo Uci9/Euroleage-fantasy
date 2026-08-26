@@ -5,6 +5,7 @@ import { buildTable, liveGames, nextRound } from './lib/euroleague';
 import { useAccount } from './lib/auth';
 import { Crest } from './components/Crest';
 import { GameRow, Head } from './components/Shared';
+import { EurocourtPromo } from './components/EurocourtPromo';
 import { Live } from './components/screens/Live';
 import { Kalendar } from './components/screens/Kalendar';
 import { Tabela } from './components/screens/Tabela';
@@ -64,6 +65,8 @@ function Home({ go }: { go: (t: Tab) => void }) {
           <div className="panel">{live.map(g => <GameRow key={g.id} g={g} live />)}</div>
         </section>
       )}
+
+      <EurocourtPromo line="An AI that reads form, matchups, minutes and injuries, then tells you who to keep and who to trade." />
 
       {next && (
         <section className="sec">

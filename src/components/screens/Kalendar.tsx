@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useGames } from '../../lib/useGames';
 import { GameRow, Head, Section } from '../Shared';
+import { EurocourtPromo } from '../EurocourtPromo';
 
 export function Kalendar() {
   const { games, error } = useGames();
@@ -21,6 +22,8 @@ export function Kalendar() {
 
   return (
     <Section>
+      <EurocourtPromo line="Know which of the next three games actually favour your players, round by round." />
+
       <Head title="Schedule" />
 
       <div className="rounds">

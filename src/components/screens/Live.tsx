@@ -1,6 +1,7 @@
 import { useGames } from '../../lib/useGames';
 import { liveGames, nextRound } from '../../lib/euroleague';
 import { GameRow, Head, Section } from '../Shared';
+import { EurocourtPromo } from '../EurocourtPromo';
 
 export function Live() {
   const { games, error } = useGames();
@@ -13,6 +14,8 @@ export function Live() {
 
   return (
     <>
+      <EurocourtPromo line="See how each club defends your position before the next round, not after it." />
+
       <Section>
         <Head title="Live now" />
         <div className="panel">

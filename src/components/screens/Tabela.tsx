@@ -2,6 +2,7 @@ import { useGames } from '../../lib/useGames';
 import { buildTable } from '../../lib/euroleague';
 import { Crest } from '../Crest';
 import { Head, Section } from '../Shared';
+import { EurocourtPromo } from '../EurocourtPromo';
 
 export function Tabela() {
   const { games, error } = useGames();
@@ -14,6 +15,8 @@ export function Tabela() {
 
   return (
     <Section>
+      <EurocourtPromo line="Standings tell you who is winning. Eurocourt's AI tells you which of their players is worth owning." />
+
       <Head title="EuroLeague table" />
 
       {played === 0 && (
