@@ -4,23 +4,22 @@ import type { Game } from '../lib/euroleague';
 
 export function fmtTime(iso: string) {
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? '' : d.toLocaleTimeString('sr-Latn', { hour: '2-digit', minute: '2-digit' });
+  return isNaN(d.getTime()) ? '' : d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 }
 
 export function fmtDay(iso: string) {
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('sr-Latn', { day: 'numeric', month: 'short' });
+  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
 /** Naslov sekcije sa opcionim linkom "vidi sve" — kao na mockupu. */
-export function Head({ icon, title, action, onAction }: {
-  icon: string; title: string; action?: string; onAction?: () => void;
+export function Head({ title, action, onAction }: {
+  title: string; action?: string; onAction?: () => void;
 }) {
   return (
-    <div className="sec__head">
-      <span className="sec__icon">{icon}</span>
-      <h2 className="sec__title">{title}</h2>
-      {action && <button className="sec__more" onClick={onAction}>{action} <span>›</span></button>}
+    <div className="sec__bar">
+      <h2>{title}</h2>
+      {action && <button className="sec__more" onClick={onAction}>{action}</button>}
     </div>
   );
 }
@@ -42,7 +41,7 @@ export function GameRow({ g, live = false }: { g: Game; live?: boolean }) {
         {done
           ? <span className="grow__score">{g.homeScore} : {g.awayScore}</span>
           : <span className="grow__time">{fmtTime(g.date)}</span>}
-        <span className="grow__day">{live ? 'UŽIVO' : fmtDay(g.date)}</span>
+        <span className="grow__day">{live ? 'LIVE' : fmtDay(g.date)}</span>
       </div>
       <div className="grow__side grow__side--r">
         <span className="grow__name">{g.away.name}</span>

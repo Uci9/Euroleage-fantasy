@@ -11,17 +11,17 @@ export function Kalendar() {
     [games]
   );
 
-  if (error) return <p className="note">Ne mogu da dohvatim raspored. Pokušaj malo kasnije.</p>;
-  if (!games) return <p className="note">Učitavam…</p>;
+  if (error) return <p className="note">Could not load the schedule. Please try again shortly.</p>;
+  if (!games) return <p className="note">Loading</p>;
 
-  // Bez izbora, otvara se prvo kolo koje još nije odigrano — ono koje se
-  // zapravo traži kad se otvori kalendar.
+  // With nothing chosen, it opens on the first round not yet played — the
+  // one people are actually looking for when they open a schedule.
   const active = round ?? games.find(g => !g.played)?.round ?? rounds[0];
   const shown = games.filter(g => g.round === active);
 
   return (
     <Section>
-      <Head icon="📅" title="Kalendar utakmica" />
+      <Head title="Schedule" />
 
       <div className="rounds">
         {rounds.map(r => (
@@ -31,7 +31,7 @@ export function Kalendar() {
 
       <div className="panel">
         {shown.length === 0
-          ? <p className="note">Nema utakmica u ovom kolu.</p>
+          ? <p className="note">No games in this round.</p>
           : shown.map(g => <GameRow key={g.id} g={g} />)}
       </div>
     </Section>

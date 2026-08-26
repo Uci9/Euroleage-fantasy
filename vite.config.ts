@@ -8,5 +8,8 @@ export default defineConfig({
     // a site built for phones.
     host: true,
     port: 5173,
+    // The API is a separate process; proxying it means the browser sees one
+    // origin, so there are no cross-origin rules to get wrong.
+    proxy: { '/api': { target: 'http://localhost:3001', changeOrigin: true } },
   },
 });

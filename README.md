@@ -1,46 +1,59 @@
 # EL Fantasy Balkan
 
-Sajt fantasy lige, pravljen prvo za telefon jer ljudi dolaze sa Instagrama.
+Fantasy league site. Built for the phone first, since people arrive from
+Instagram. Same visual language as Eurocourt.
 
-## Pokretanje
+## Running it
+
+Two processes — the site and the API:
 
 ```bash
 pnpm install
-pnpm run dev
+pnpm run dev:api     # API on :3001
+pnpm run dev         # site on :5173
 ```
 
-Otvara se na `http://localhost:5173`. Server sluša i na mreži, pa se sa telefona
-na istom wifiju otvara `http://<ip-racunara>:5173` — jedini pošten način da se
-provjeri sajt pravljen za telefon.
+Open `http://localhost:5173`. Vite proxies `/api` to the API, so the browser
+sees one origin. The site also listens on the network, so
+`http://<this-machine-ip>:5173` opens on a phone on the same wifi — the only
+honest way to check a site built for phones.
 
-## Gdje se šta mijenja
+## The admin account
 
-**`src/lib/content.ts`** — sav tekst na jednom mjestu. Sve što piše `TODO` čeka
-vaš podatak i na sajtu je označeno narandžastom crtom, da se vidi šta fali:
-kotizacija, broj mjesta, pravila, nagrade, Instagram, Viber i mejl.
+Created once, from the command line, so a password never lives in the code:
 
-Logo je `public/logo.jpg` (i `logo-small.jpg` za zaglavlje).
+```bash
+ADMIN_PASSWORD='your-password' pnpm run create-admin
+```
 
-## Ekrani
+Only the hash is stored. Sign in through the site to reach the admin panel and
+the member list.
 
-Bočni meni: Početna, Kako funkcioniše, Pravila, Live rezultati, Kalendar,
-EuroLeague tabela, Ko smo mi, Prijavi se. Donja traka drži pet najkorišćenijih.
+## Accounts
 
-Statistika igrača, statistika timova i novosti namjerno nisu tu.
+Creating an account *is* the league entry — one form, no way to end up
+registered for one and not the other. Usernames and Gmail addresses are unique,
+compared case-insensitively, so `Admin` and `admin` are the same name.
 
-## Odakle podaci
+## Where the content lives
 
-Kalendar, live rezultati i tabela idu direktno sa zvaničnog EuroLeague servisa,
-iz browsera. Nema servera, nema baze, nema mjesečnog troška — sajt su samo
-fajlovi. Raspored se dohvata jednom i dijeli između ekrana.
+**`src/lib/content.ts`** — every piece of text. Anything marked `TODO` is
+waiting on your details and is flagged on the site itself: places, prizes, and
+the remaining rules, plus the Instagram, Viber and contact links.
 
-Tabela se računa iz odigranih utakmica, pa je prazna dok sezona ne počne i
-popunjava se sama. Live je utakmica koja je počela a nije završena.
+The logo is `public/logo.jpg` (and `logo-small.jpg` for the header).
 
-## Šta još nije riješeno
+## Data
 
-**Prijava se ne čuva nigdje.** Forma provjeri podatke i preda ih preko mejla ili
-Instagrama, jer bez servera nema gdje da ih upiše. Za prave naloge i listu
-prijava treba baza — Supabase ima besplatan nivo i ne traži održavanje servera.
+Members live in `data/db.json`, written atomically. It is gitignored — it holds
+real people's addresses.
 
-**Reklame** se dodaju kad bude posjeta; mjesta između sekcija su spremna.
+Schedule, live scores and the table come straight from the official EuroLeague
+service in the browser. The table is computed from played games, so it is empty
+until the season starts and fills itself.
+
+## Before this goes public
+
+- **Serve it over HTTPS** and set `secure: true` on the session cookie.
+- **Set `SESSION_SECRET`** so a restart does not sign everybody out.
+- The entry fee is collected off the site; nothing here takes payments.

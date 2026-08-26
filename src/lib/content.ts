@@ -1,64 +1,77 @@
 /**
- * Sav tekst sa sajta, na jednom mjestu.
+ * Every piece of text on the site, in one place.
  *
- * Mijenja se ovdje i odmah se vidi na sajtu, bez diranja koda. Sve što piše
- * TODO čeka vaš podatak i na sajtu je označeno narandžastom crtom.
+ * Change it here and it appears on the site — no code to touch. Anything
+ * marked TODO is waiting on your details and is flagged on the site itself.
  */
 
 export const BRAND = {
   name: 'EL Fantasy Balkan',
-  tagline: 'Igraj. Predviđaj. Osvajaj.',
-  sub: 'Fantasy liga za prave ljubitelje evroligaške košarke',
-  instagram: 'https://instagram.com/',   // TODO: link vašeg Instagrama
-  viber: '',                              // TODO: link Viber grupe
-  email: '',                              // TODO: mejl za prijave
+  tagline: 'Play. Predict. Win.',
+  sub: 'Fantasy league for true EuroLeague basketball fans',
+  instagram: 'https://instagram.com/',   // TODO: your Instagram link
+  viber: '',                              // TODO: Viber group invite link
+  email: '',                              // TODO: contact address
 };
 
 export const HOME = {
-  lead: 'Biraj igrače. Prati rezultate. Takmiči se. Postani legenda.',
+  lead: 'Pick your players. Follow the results. Compete. Become a legend.',
 };
 
 export const HOW = {
   intro:
-    'Fantasy je jednostavan: biraš igrače iz Evrolige u okviru budžeta, ' +
-    'a oni ti donose bodove po onome što odigraju na terenu.',
+    'Fantasy is simple: you pick EuroLeague players within a budget, and they ' +
+    'score you points for what they actually do on the court.',
   steps: [
-    { title: 'Sastavi tim', text: 'Biraš igrače u okviru budžeta koji svi imaju isti.' },
-    { title: 'Prati kolo', text: 'Bodovi se računaju po učinku iz odigranih utakmica.' },
-    { title: 'Mijenjaj', text: 'Poslije svakog kola imaš ograničen broj transfera.' },
-    { title: 'Penji se', text: 'Zbir bodova kroz sezonu određuje mjesto na tabeli lige.' },
+    { title: 'Build your team', text: 'Pick players within a budget every manager shares.' },
+    { title: 'Follow the round', text: 'Points come from what your players produce in real games.' },
+    { title: 'Make transfers', text: 'After each round you get a limited number of changes.' },
+    { title: 'Climb the table', text: 'Your total across the season decides where you finish.' },
   ],
 };
 
 export const RULES = {
   facts: [
-    { label: 'Kotizacija', value: 'TODO' },
-    { label: 'Broj mjesta', value: 'TODO' },
-    { label: 'Trajanje', value: 'Cijela sezona' },
-    { label: 'Prijave', value: 'Otvorene' },
+    { label: 'Entry fee', value: '15 EUR' },
+    { label: 'Places', value: 'TODO' },
+    { label: 'Registration', value: 'Until the season starts' },
+    { label: 'Status', value: 'Open' },
   ],
   list: [
-    'TODO — pravilo o sastavljanju tima i budžetu.',
-    'TODO — pravilo o transferima po kolu.',
-    'TODO — kako se računaju bodovi i šta se dešava kod izjednačenja.',
-    'TODO — rok za prijavu i uplatu kotizacije.',
+    'The entry fee is 15 EUR, paid once for the whole season.',
+    'Registration closes when the season starts — after that no new managers join.',
+    'TODO — squad and budget rule.',
+    'TODO — transfers per round.',
+    'TODO — how points are scored and how ties are settled.',
   ],
   prizes: [
-    { place: '1.', prize: 'TODO' },
-    { place: '2.', prize: 'TODO' },
-    { place: '3.', prize: 'TODO' },
+    { place: '1', prize: 'TODO' },
+    { place: '2', prize: 'TODO' },
+    { place: '3', prize: 'TODO' },
   ],
 };
 
-/** Tekst iz vašeg "Ko smo mi" postera. */
 export const ABOUT = {
-  title: 'Ko smo mi?',
+  lead:
+    'We are EL Fantasy Balkan — an independent fantasy league, started out of ' +
+    'nothing but love for EuroLeague basketball.',
   points: [
-    'Mi smo **EL Fantasy Balkan** – nezavisna Fantasy liga stvorena iz čiste ljubavi prema evroligaškoj košarci.',
-    'Okupljamo ljubitelje Fantasy-ja sa **Balkana** i širom Evrope u jednoj **kvalitetnoj i fer ligi**.',
-    'Svake sedmice donosimo **analize, savjete i statistike** kako biste lakše birali tim i igrače.',
-    'Želimo da izgradimo **sportsku, prijateljsku i takmičarsku** zajednicu u kojoj se svi osjećaju dobrodošlo.',
-    'Broj mjesta je ograničen, nagrade su vrijedne, a atmosfera prava – **balkanska**.',
+    {
+      title: 'One league, one region',
+      text: 'We bring fantasy players from the Balkans and across Europe together in a league that is competitive and fair.',
+    },
+    {
+      title: 'Analysis every week',
+      text: 'Every week we publish analysis, tips and statistics, so picking your team and your players is easier.',
+    },
+    {
+      title: 'A community, not a scoreboard',
+      text: 'We want a sporting, friendly and competitive community where everybody is made welcome.',
+    },
+    {
+      title: 'Limited places',
+      text: 'Places are limited, the prizes are worth playing for, and the atmosphere is the real thing — Balkan.',
+    },
   ],
-  signoff: 'Vaš, EL Fantasy Balkan tim',
+  signoff: 'Yours, the EL Fantasy Balkan team',
 };

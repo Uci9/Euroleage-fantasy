@@ -6,26 +6,26 @@ import { Head, Section } from '../Shared';
 export function Tabela() {
   const { games, error } = useGames();
 
-  if (error) return <p className="note">Ne mogu da dohvatim tabelu. Pokušaj malo kasnije.</p>;
-  if (!games) return <p className="note">Učitavam…</p>;
+  if (error) return <p className="note">Could not load the table. Please try again shortly.</p>;
+  if (!games) return <p className="note">Loading</p>;
 
   const rows = buildTable(games);
 
   return (
     <Section>
-      <Head icon="🏆" title="EuroLeague tabela" />
+      <Head title="EuroLeague table" />
 
       {rows.length === 0 ? (
         <div className="panel">
           <p className="note">
-            Sezona još nije počela, pa nema odigranih utakmica ni tabele.
+            The season has not started, so there are no played games and no table yet.
             <br /><br />
-            U takmičenju je {clubsFrom(games).length} klubova — tabela se popunjava sama čim krenu utakmice.
+            {clubsFrom(games).length} clubs are in the competition. The table fills itself once games are played.
           </p>
         </div>
       ) : (
         <div className="panel">
-          <div className="thead"><span>#</span><span /><span>Tim</span><span>U</span><span>P</span><span>%</span></div>
+          <div className="thead"><span>#</span><span /><span>Team</span><span>W</span><span>L</span><span>PCT</span></div>
           {rows.map((r, i) => {
             const pct = r.played > 0 ? Math.round((r.wins / r.played) * 1000) / 10 : 0;
             return (
