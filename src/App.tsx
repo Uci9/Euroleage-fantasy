@@ -1,180 +1,179 @@
 import { useEffect, useState } from 'react';
-import { ABOUT, BRAND, FANTASY, HOME, LEAGUE } from './lib/content';
-import { EuroLeagueScreen } from './components/EuroLeagueScreen';
+import { BRAND, HOME } from './lib/content';
+import { useGames } from './lib/useGames';
+import { buildTable, liveGames, nextRound } from './lib/euroleague';
+import { Crest } from './components/Crest';
+import { GameRow, Head, Section } from './components/Shared';
+import { Live } from './components/screens/Live';
+import { Kalendar } from './components/screens/Kalendar';
+import { Tabela } from './components/screens/Tabela';
+import { KakoFunkcionise, KoSmoMi, Pravila } from './components/screens/Static';
 import { SignupScreen } from './components/SignupScreen';
 
-type Tab = 'pocetna' | 'fantasy' | 'liga' | 'euroleague' | 'onama' | 'prijava';
+type Tab =
+  | 'pocetna' | 'kako' | 'pravila' | 'live'
+  | 'kalendar' | 'tabela' | 'kosmomi' | 'prijava';
 
-const NAV: [Tab, string, string][] = [
+/** Bočni meni — cijela ponuda sajta. */
+const MENU: [Tab, string, string][] = [
   ['pocetna', '🏠', 'Početna'],
-  ['fantasy', '🏀', 'Fantasy'],
-  ['liga', '🏆', 'Naša liga'],
-  ['euroleague', '📊', 'EuroLeague'],
-  ['onama', '👥', 'O nama'],
+  ['kako', 'ℹ️', 'Kako funkcioniše'],
+  ['pravila', '📋', 'Pravila'],
+  ['live', '🔴', 'Live rezultati'],
+  ['kalendar', '📅', 'Kalendar'],
+  ['tabela', '🏆', 'EuroLeague tabela'],
+  ['kosmomi', '👥', 'Ko smo mi'],
+  ['prijava', '📝', 'Prijavi se'],
 ];
 
-/** Logo: vaš fajl kad stigne, do tada inicijali u istoj boji. */
-function Logo() {
-  const [failed, setFailed] = useState(false);
-  if (failed) return <div className="hero__logo">{BRAND.short}</div>;
-  return (
-    <div className="hero__logo">
-      <img src="/logo.png" alt={BRAND.name} onError={() => setFailed(true)} />
-    </div>
-  );
-}
+/** Donja traka — ono najkorišćenije, na dohvat palca. */
+const BOTTOM: [Tab, string, string][] = [
+  ['pocetna', '🏠', 'Početna'],
+  ['live', '🔴', 'Live'],
+  ['kalendar', '📅', 'Kalendar'],
+  ['tabela', '🏆', 'Tabela'],
+];
 
-function Home({ go }: { go: (t: Tab) => void }) {
+function Pocetna({ go }: { go: (t: Tab) => void }) {
+  const { games } = useGames();
+  const live = games ? liveGames(games) : [];
+  const next = games ? nextRound(games) : null;
+  const table = games ? buildTable(games).slice(0, 5) : [];
+
   return (
-    <div className="screen">
+    <>
       <div className="hero">
-        <Logo />
-        <h1>{BRAND.name}</h1>
-        <p className="hero__tag">{BRAND.tagline}</p>
-        <p className="hero__lead">{HOME.lead}</p>
-        <ul className="ticks">
-          {HOME.points.map(p => <li key={p}>{p}</li>)}
-        </ul>
-        <div className="btn-wrap">
-          <button className="btn" onClick={() => go('prijava')}>Uđi u ligu</button>
+        <div className="hero__bg" />
+        <div className="hero__in">
+          <img className="hero__logo" src="/logo.jpg" alt={BRAND.name} />
+          <h1>EL FANTASY BALKAN</h1>
+          <p className="hero__tag">{BRAND.tagline}</p>
+          <p className="hero__lead">{HOME.lead}</p>
+          <div className="hero__btns">
+            <button className="btn" onClick={() => go('prijava')}>Prijavi se</button>
+            {BRAND.viber
+              ? <a className="btn btn--ghost" href={BRAND.viber} target="_blank" rel="noopener noreferrer">Viber grupa</a>
+              : <button className="btn btn--ghost" onClick={() => go('kako')}>Kako funkcioniše</button>}
+          </div>
         </div>
-        <div className="btn-wrap">
-          <button className="btn btn--ghost" onClick={() => go('liga')}>Pravila i nagrade</button>
-        </div>
       </div>
-    </div>
-  );
-}
 
-function Fantasy({ go }: { go: (t: Tab) => void }) {
-  return (
-    <div className="screen">
-      <span className="eyebrow">Kako se igra</span>
-      <h1>Fantasy</h1>
-      <p className="lead">{FANTASY.intro}</p>
+      {live.length > 0 && (
+        <Section>
+          <Head icon="🔴" title="Uživo" action="Sve utakmice" onAction={() => go('live')} />
+          <div className="panel">{live.map(g => <GameRow key={g.id} g={g} live />)}</div>
+        </Section>
+      )}
 
-      <h2>Četiri koraka</h2>
-      <div className="cards">
-        {FANTASY.steps.map((s, i) => (
-          <div className="card step" key={s.title}>
-            <div className="step__n">{i + 1}</div>
-            <div>
-              <div className="step__t">{s.title}</div>
-              <div className="step__d">{s.text}</div>
-            </div>
+      {next && (
+        <Section>
+          <Head icon="📅" title={`${next.round}. kolo`} action="Ceo kalendar" onAction={() => go('kalendar')} />
+          <div className="panel">{next.games.slice(0, 4).map(g => <GameRow key={g.id} g={g} />)}</div>
+        </Section>
+      )}
+
+      {table.length > 0 && (
+        <Section>
+          <Head icon="🏆" title="Tabela" action="Cela tabela" onAction={() => go('tabela')} />
+          <div className="panel">
+            {table.map((r, i) => (
+              <div className="trow trow--mini" key={r.club.code}>
+                <span className="trow__r">{i + 1}</span>
+                <Crest club={r.club} size={22} />
+                <span className="trow__n">{r.club.name}</span>
+                <span className="trow__v trow__v--hi">{r.wins}-{r.losses}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      <h2>Naši prijedlozi</h2>
-      <div className="cards">
-        {FANTASY.picks.map((p, i) => (
-          <div className={`card ${p.name.startsWith('TODO') ? 'todo' : ''}`} key={i}>
-            <div className="pick__n">{p.name}</div>
-            <div className="pick__t">{p.team}</div>
-            <div className="pick__w">{p.why}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="btn-wrap">
-        <button className="btn" onClick={() => go('prijava')}>Prijavi se</button>
-      </div>
-    </div>
-  );
-}
-
-function League({ go }: { go: (t: Tab) => void }) {
-  return (
-    <div className="screen">
-      <span className="eyebrow">Sve o ligi</span>
-      <h1>Naša liga</h1>
-      <p className="lead">{LEAGUE.intro}</p>
-
-      <div className="facts" style={{ marginTop: 18 }}>
-        {LEAGUE.facts.map(f => (
-          <div className="fact" key={f.label}>
-            <div className="fact__l">{f.label}</div>
-            <div className="fact__v">{f.value}</div>
-          </div>
-        ))}
-      </div>
-
-      <h2>Pravila</h2>
-      <div className="card todo">
-        <ol className="rules">
-          {LEAGUE.rules.map((r, i) => <li key={i}>{r}</li>)}
-        </ol>
-      </div>
-
-      <h2>Nagrade</h2>
-      <div className="cards">
-        {LEAGUE.prizes.map(p => (
-          <div className="card prize" key={p.place}>
-            <div className="prize__p">{p.place}</div>
-            <div className="prize__v">{p.prize}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="btn-wrap">
-        <button className="btn" onClick={() => go('prijava')}>Prijavi se za ligu</button>
-      </div>
-    </div>
-  );
-}
-
-function About() {
-  return (
-    <div className="screen">
-      <span className="eyebrow">Ko smo mi</span>
-      <h1>O nama</h1>
-      <div className="card todo" style={{ marginTop: 16 }}>
-        {ABOUT.text.map((t, i) => (
-          <p key={i} className="lead" style={{ marginBottom: i < ABOUT.text.length - 1 ? 12 : 0 }}>{t}</p>
-        ))}
-      </div>
-      <div className="btn-wrap">
-        <a className="btn btn--ghost" href={BRAND.instagram} target="_blank" rel="noopener noreferrer">
-          Prati nas na Instagramu
-        </a>
-      </div>
-    </div>
+        </Section>
+      )}
+    </>
   );
 }
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('pocetna');
+  const [menu, setMenu] = useState(false);
 
-  // Novi ekran uvijek počinje od vrha — inače korisnik sleti na sredinu
-  // sadržaja koji nije ni otvorio.
+  const go = (t: Tab) => { setTab(t); setMenu(false); };
+
   useEffect(() => { window.scrollTo(0, 0); }, [tab]);
+
+  // Otvoren meni prekriva ekran, pa stranica ispod ne smije da se pomjera,
+  // a Escape ga zatvara kao i svaki drugi sloj preko sadržaja.
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(false); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [menu]);
+
+  const title = MENU.find(m => m[0] === tab)?.[2] ?? '';
 
   return (
     <div className="app">
-      {tab === 'pocetna' && <Home go={setTab} />}
-      {tab === 'fantasy' && <Fantasy go={setTab} />}
-      {tab === 'liga' && <League go={setTab} />}
-      {tab === 'euroleague' && <EuroLeagueScreen />}
-      {tab === 'onama' && <About />}
-      {tab === 'prijava' && <SignupScreen />}
+      <header className="top">
+        <button className="top__burger" onClick={() => setMenu(true)} aria-label="Meni">
+          <span /><span /><span />
+        </button>
+        <button className="top__brand" onClick={() => go('pocetna')}>
+          <img src="/logo-small.jpg" alt="" />
+          <span>
+            <b>EL FANTASY BALKAN</b>
+            <i>{tab === 'pocetna' ? BRAND.sub : title}</i>
+          </span>
+        </button>
+      </header>
 
-      <p className="foot">
-        {BRAND.name} · nezvanični fan sajt<br />
-        Nije povezan sa EuroLeague Basketball.
-      </p>
+      {menu && (
+        <>
+          <div className="drawer__bg" onClick={() => setMenu(false)} />
+          <nav className="drawer">
+            <div className="drawer__top">
+              <img src="/logo.jpg" alt={BRAND.name} />
+              <b>EL FANTASY BALKAN</b>
+              <i>{BRAND.sub}</i>
+            </div>
+            {MENU.map(([key, icon, label]) => (
+              <button key={key} className={tab === key ? 'on' : ''} onClick={() => go(key)}>
+                <span className="drawer__i">{icon}</span>{label}
+              </button>
+            ))}
+            {BRAND.viber && (
+              <a className="drawer__viber" href={BRAND.viber} target="_blank" rel="noopener noreferrer">
+                <span className="drawer__i">💬</span>Viber grupa
+              </a>
+            )}
+          </nav>
+        </>
+      )}
 
-      <nav className="nav">
-        {NAV.map(([key, icon, label]) => (
-          <button
-            key={key}
-            className={tab === key || (key === 'liga' && tab === 'prijava') ? 'on' : ''}
-            onClick={() => setTab(key)}
-          >
-            <span className="nav__i">{icon}</span>
-            {label}
+      <main className="main">
+        {tab === 'pocetna' && <Pocetna go={go} />}
+        {tab === 'kako' && <KakoFunkcionise go={go as (t: string) => void} />}
+        {tab === 'pravila' && <Pravila go={go as (t: string) => void} />}
+        {tab === 'live' && <Live />}
+        {tab === 'kalendar' && <Kalendar />}
+        {tab === 'tabela' && <Tabela />}
+        {tab === 'kosmomi' && <KoSmoMi />}
+        {tab === 'prijava' && <SignupScreen />}
+
+        <p className="foot">
+          {BRAND.name} · nezavisna fantasy liga<br />
+          Nije povezano sa EuroLeague Basketball.
+        </p>
+      </main>
+
+      <nav className="bottom">
+        {BOTTOM.map(([key, icon, label]) => (
+          <button key={key} className={tab === key ? 'on' : ''} onClick={() => go(key)}>
+            <span className="bottom__i">{icon}</span>{label}
           </button>
         ))}
+        <button className={menu ? 'on' : ''} onClick={() => setMenu(true)}>
+          <span className="bottom__i">•••</span>Više
+        </button>
       </nav>
     </div>
   );

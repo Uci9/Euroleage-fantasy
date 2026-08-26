@@ -118,6 +118,33 @@ export function buildTable(games: Game[]): TableRow[] {
   );
 }
 
+/**
+ * Utakmice koje se igraju upravo sada.
+ *
+ * API nema poseban "live" endpoint: utakmica u toku je ona koja je počela a
+ * još nije označena kao odigrana. Prozor od tri sata pokriva i produžetke, a
+ * sprječava da meč od prekjuče, koji se zaglavio kao neodigran, zauvijek stoji
+ * kao da traje.
+ */
+export function liveGames(games: Game[], now = new Date()): Game[] {
+  const MS = 3 * 60 * 60 * 1000;
+  return games.filter(g => {
+    if (g.played) return false;
+    const t = new Date(g.date).getTime();
+    if (isNaN(t)) return false;
+    const start = now.getTime() - t;
+    return start >= 0 && start <= MS;
+  });
+}
+
+/** Prvo sljedeće kolo — ono što ljudi traže kad otvore kalendar. */
+export function nextRound(games: Game[]): { round: number; games: Game[] } | null {
+  const upcoming = games.filter(g => !g.played);
+  if (upcoming.length === 0) return null;
+  const round = upcoming[0].round;
+  return { round, games: upcoming.filter(g => g.round === round) };
+}
+
 /** Klubovi u takmičenju — poznati iz rasporeda i prije prve utakmice. */
 export function clubsFrom(games: Game[]): Club[] {
   const seen = new Map<string, Club>();

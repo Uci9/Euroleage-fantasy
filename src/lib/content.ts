@@ -1,56 +1,43 @@
 /**
  * Sav tekst sa sajta, na jednom mjestu.
  *
- * Vi šaljete tekstove i logo — ovdje se mijenja i odmah se vidi na sajtu,
- * bez diranja koda. Sve što piše TODO je privremeno i čeka vaš tekst.
+ * Mijenja se ovdje i odmah se vidi na sajtu, bez diranja koda. Sve što piše
+ * TODO čeka vaš podatak i na sajtu je označeno narandžastom crtom.
  */
 
 export const BRAND = {
-  name: 'EuroLeague Fantasy Balkan',
-  short: 'EFB',
-  tagline: 'Fantasy liga za one koji EuroLigu prate ozbiljno.',
-  instagram: 'https://instagram.com/',   // TODO: vaš Instagram
+  name: 'EL Fantasy Balkan',
+  tagline: 'Igraj. Predviđaj. Osvajaj.',
+  sub: 'Fantasy liga za prave ljubitelje evroligaške košarke',
+  instagram: 'https://instagram.com/',   // TODO: link vašeg Instagrama
+  viber: '',                              // TODO: link Viber grupe
   email: '',                              // TODO: mejl za prijave
 };
 
 export const HOME = {
-  lead:
-    'Napravi svoj tim, prati kola i takmiči se sa ekipom sa Balkana. ' +
-    'Sve na jednom mjestu — pravila, tabela i raspored.',
-  points: [
-    'Nova liga svake sezone',
-    'Nagrade za prva tri mjesta',
-    'Bodovanje po zvaničnoj EuroLeague statistici',
-  ],
+  lead: 'Biraj igrače. Prati rezultate. Takmiči se. Postani legenda.',
 };
 
-export const FANTASY = {
+export const HOW = {
   intro:
-    'Fantasy je jednostavan: biraš igrače iz EuroLige u okviru budžeta, ' +
+    'Fantasy je jednostavan: biraš igrače iz Evrolige u okviru budžeta, ' +
     'a oni ti donose bodove po onome što odigraju na terenu.',
   steps: [
     { title: 'Sastavi tim', text: 'Biraš igrače u okviru budžeta koji svi imaju isti.' },
-    { title: 'Prati kolo', text: 'Bodovi se računaju po učinku (PIR) iz odigranih utakmica.' },
+    { title: 'Prati kolo', text: 'Bodovi se računaju po učinku iz odigranih utakmica.' },
     { title: 'Mijenjaj', text: 'Poslije svakog kola imaš ograničen broj transfera.' },
     { title: 'Penji se', text: 'Zbir bodova kroz sezonu određuje mjesto na tabeli lige.' },
   ],
-  // TODO: ovdje ide vaš izbor igrača za tekuće kolo
-  picks: [
-    { name: 'TODO — ime igrača', team: 'Klub', why: 'Zašto ga preporučujete ovo kolo.' },
-    { name: 'TODO — ime igrača', team: 'Klub', why: 'Zašto ga preporučujete ovo kolo.' },
-    { name: 'TODO — ime igrača', team: 'Klub', why: 'Zašto ga preporučujete ovo kolo.' },
-  ],
 };
 
-export const LEAGUE = {
-  intro: 'Naša liga se igra kroz cijelu sezonu EuroLige.',
+export const RULES = {
   facts: [
     { label: 'Kotizacija', value: 'TODO' },
-    { label: 'Broj igrača', value: 'TODO' },
+    { label: 'Broj mjesta', value: 'TODO' },
     { label: 'Trajanje', value: 'Cijela sezona' },
     { label: 'Prijave', value: 'Otvorene' },
   ],
-  rules: [
+  list: [
     'TODO — pravilo o sastavljanju tima i budžetu.',
     'TODO — pravilo o transferima po kolu.',
     'TODO — kako se računaju bodovi i šta se dešava kod izjednačenja.',
@@ -63,10 +50,15 @@ export const LEAGUE = {
   ],
 };
 
+/** Tekst iz vašeg "Ko smo mi" postera. */
 export const ABOUT = {
-  // TODO: ovdje ide vaš tekst o vama
-  text: [
-    'TODO — ko ste vi i zašto ste pokrenuli ligu.',
-    'TODO — kako da vas ljudi kontaktiraju i šta mogu očekivati.',
+  title: 'Ko smo mi?',
+  points: [
+    'Mi smo **EL Fantasy Balkan** – nezavisna Fantasy liga stvorena iz čiste ljubavi prema evroligaškoj košarci.',
+    'Okupljamo ljubitelje Fantasy-ja sa **Balkana** i širom Evrope u jednoj **kvalitetnoj i fer ligi**.',
+    'Svake sedmice donosimo **analize, savjete i statistike** kako biste lakše birali tim i igrače.',
+    'Želimo da izgradimo **sportsku, prijateljsku i takmičarsku** zajednicu u kojoj se svi osjećaju dobrodošlo.',
+    'Broj mjesta je ograničen, nagrade su vrijedne, a atmosfera prava – **balkanska**.',
   ],
+  signoff: 'Vaš, EL Fantasy Balkan tim',
 };

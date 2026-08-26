@@ -53,8 +53,8 @@ export function SignupScreen() {
 
   if (sent) {
     return (
-      <div className="screen">
-        <div className="card done">
+      <>
+        <div className="panel done">
           <div className="done__i">✓</div>
           <h2 style={{ margin: '0 0 8px' }}>Prijava je spremna</h2>
           <p className="lead">
@@ -73,17 +73,19 @@ export function SignupScreen() {
             </button>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="screen">
-      <span className="eyebrow">Uđi u ligu</span>
-      <h1>Prijava</h1>
+    <section className="sec">
+      <div className="sec__head">
+        <span className="sec__icon">📝</span>
+        <h2 className="sec__title">Prijava za ligu</h2>
+      </div>
       <p className="lead">Ostavi podatke i javljamo ti se sa svim detaljima.</p>
 
-      <form className="card" style={{ marginTop: 18 }} onSubmit={submit} noValidate>
+      <form className="panel" style={{ marginTop: 12 }} onSubmit={submit} noValidate>
         <div className="field">
           <label htmlFor="ime">Ime i prezime</label>
           <input id="ime" value={form.ime} onChange={set('ime')} autoComplete="name" />
@@ -110,6 +112,6 @@ export function SignupScreen() {
         </div>
         <button className="btn" type="submit">Pošalji prijavu</button>
       </form>
-    </div>
+    </section>
   );
 }
