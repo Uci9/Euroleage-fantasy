@@ -3,8 +3,14 @@ import { refreshAccount, setAccount, useAccount, signOut, type Account } from '.
 
 type Mode = 'login' | 'signup';
 
-/** Says which half is down and what to do about it, rather than just failing. */
-const OFFLINE = 'The account server is not responding. Start it with "pnpm start" and try again.';
+/**
+ * Shown only when somebody actually tries to sign in or join.
+ *
+ * Worded for a visitor, not an operator: what to do about a server that is not
+ * answering is the owner's problem, and a stranger reading a command to run is
+ * being handed somebody else's job.
+ */
+const OFFLINE = 'We cannot reach the server right now. Please try again in a moment.';
 
 /**
  * Sign in and join, in one screen.
