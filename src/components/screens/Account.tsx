@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { setAccount, useAccount, signOut, type Account } from '../../lib/auth';
+import { refreshAccount, setAccount, useAccount, signOut, type Account } from '../../lib/auth';
 
 type Mode = 'login' | 'signup';
 
@@ -46,7 +46,7 @@ export function AccountScreen({ go }: { go: (t: string) => void }) {
       // sends people looking in the wrong place.
       const data = await res.json().catch(() => null);
 
-      if (!data) { setError(OFFLINE); return; }
+      if (!data) { setError(OFFLINE); refreshAccount(); return; }
       if (!res.ok) { setError(data.error ?? 'Something went wrong.'); return; }
       setAccount(data as Account);
     } catch {

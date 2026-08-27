@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { BRAND, HOME } from './lib/content';
 import { useGames } from './lib/useGames';
 import { buildTable, liveGames, nextRound } from './lib/euroleague';
-import { useAccount } from './lib/auth';
+import { refreshAccount, useAccount } from './lib/auth';
 import { Crest } from './components/Crest';
 import { GameRow, Head } from './components/Shared';
 import { EurocourtPromo } from './components/EurocourtPromo';
@@ -171,6 +171,8 @@ export default function App() {
           <div className="form__err" style={{ marginBottom: 16 }}>
             The account server is not running, so signing in and joining will not work.
             Start it with <code>pnpm start</code>.
+            {' '}
+            <button className="linkish" onClick={() => refreshAccount()}>Check again</button>
           </div>
         )}
 

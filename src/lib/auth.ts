@@ -38,7 +38,29 @@ async function load() {
   broadcast();
 }
 
-export function isOffline() { return offline; }
+/**
+ * Asks the server again.
+ *
+ * The first version checked once at page load and never again, so a tab opened
+ * while the API was down kept saying so for as long as it stayed open — long
+ * after the server came back. A banner that cannot clear itself is worse than
+ * no banner: it teaches people to ignore it.
+ */
+export function refreshAccount() {
+  return load();
+}
+
+/**
+ * Re-check whenever the page is looked at again. Somebody who reads the banner,
+ * starts the server and comes back finds the site working, without being told
+ * to reload — which is the fix they would have had to guess at.
+ */
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') load();
+  });
+  window.addEventListener('focus', () => load());
+}
 
 export function useAccount() {
   const [account, setLocal] = useState<Account | null>(current);
