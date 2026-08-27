@@ -3,6 +3,9 @@ import { setAccount, useAccount, signOut, type Account } from '../../lib/auth';
 
 type Mode = 'login' | 'signup';
 
+/** Says which half is down and what to do about it, rather than just failing. */
+const OFFLINE = 'The account server is not responding. Start it with "pnpm start" and try again.';
+
 /**
  * Sign in and join, in one screen.
  *
@@ -36,11 +39,18 @@ export function AccountScreen({ go }: { go: (t: string) => void }) {
       const res = await fetch(`/api/${mode}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
       });
-      const data = await res.json();
+
+      // A reply that is not JSON means the request never reached the API — the
+      // dev proxy answers with an HTML error page when nothing is listening.
+      // Parsing it would throw and get reported as a network fault, which
+      // sends people looking in the wrong place.
+      const data = await res.json().catch(() => null);
+
+      if (!data) { setError(OFFLINE); return; }
       if (!res.ok) { setError(data.error ?? 'Something went wrong.'); return; }
       setAccount(data as Account);
     } catch {
-      setError('Cannot reach the server. Is it running?');
+      setError(OFFLINE);
     } finally {
       setBusy(false);
     }

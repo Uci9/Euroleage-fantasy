@@ -97,7 +97,7 @@ function Home({ go }: { go: (t: Tab) => void }) {
 export default function App() {
   const [tab, setTab] = useState<Tab>('home');
   const [menu, setMenu] = useState(false);
-  const { account } = useAccount();
+  const { account, offline } = useAccount();
 
   const go = (t: Tab) => { setTab(t); setMenu(false); };
 
@@ -165,6 +165,15 @@ export default function App() {
       )}
 
       <main className="main">
+        {/* Said once, at the top, rather than after somebody has filled in a
+            whole form and pressed the button. */}
+        {offline && (
+          <div className="form__err" style={{ marginBottom: 16 }}>
+            The account server is not running, so signing in and joining will not work.
+            Start it with <code>pnpm start</code>.
+          </div>
+        )}
+
         {tab === 'home' && <Home go={go} />}
         {tab === 'how' && <HowItWorks go={go as (t: string) => void} />}
         {tab === 'rules' && <Rules go={go as (t: string) => void} />}

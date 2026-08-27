@@ -5,13 +5,16 @@ Instagram. Same visual language as Eurocourt.
 
 ## Running it
 
-Two processes — the site and the API:
-
 ```bash
 pnpm install
-pnpm run dev:api     # API on :3001
-pnpm run dev         # site on :5173
+pnpm start
 ```
+
+That runs both halves — the site on :5173 and the account API on :3001. They
+are one command on purpose: with two, it is easy to start only the site, and
+then signing in fails with nothing on screen explaining why. If the API is not
+running the site says so in a banner at the top rather than waiting for
+somebody to fill in a form first.
 
 Open `http://localhost:5173`. Vite proxies `/api` to the API, so the browser
 sees one origin. The site also listens on the network, so
