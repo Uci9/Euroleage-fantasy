@@ -18,12 +18,12 @@ if (!password) {
   process.exit(1);
 }
 
-if (findByUsername(username)) {
+if (await findByUsername(username)) {
   console.error(`"${username}" already exists. Delete it from data/db.json to recreate it.`);
   process.exit(1);
 }
 
-addUser({
+await addUser({
   username, email, passwordHash: hashPassword(password),
   fullName: 'Administrator', city: '', instagram: '', isAdmin: true,
 });

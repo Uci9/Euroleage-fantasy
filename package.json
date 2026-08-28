@@ -10,14 +10,18 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "create-admin": "tsx server/create-admin.ts"
+    "create-admin": "tsx server/create-admin.ts",
+    "netlify:admin": "tsx server/create-admin.ts"
   },
   "dependencies": {
+    "@netlify/blobs": "^11.0.2",
     "express": "^5.2.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
+    "@netlify/functions": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/node": "^26.3.0",
     "@types/react": "^19.1.0",

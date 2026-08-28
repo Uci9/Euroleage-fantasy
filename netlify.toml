@@ -1,0 +1,27 @@
+# Netlify serves the built site and runs the account API as a function.
+#
+# Without the redirect below /api/* would fall through to the single-page
+# fallback and answer with the index page, which is what a fetch reads as
+# "cannot reach the server".
+
+[build]
+  command = "pnpm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# The API first: order matters, and the catch-all below would otherwise
+# swallow every request.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/api/:splat"
+  status = 200
+  force = true
+
+# Everything else is the single-page app.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

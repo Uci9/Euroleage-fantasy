@@ -9,7 +9,7 @@ import express from 'express';
 import {
   SESSION_COOKIE, createSession, hashPassword, readSession, verifyPassword,
 } from './auth';
-import { addUser, allUsers, deleteUser, findByEmail, findById, findByUsername } from './store';
+import { addUser, allUsers, deleteUser, findByEmail, findById, findByUsername, onNetlify, type User } from './store';
 
 const app = express();
 const PORT = Number(process.env.API_PORT || 3001);
@@ -28,20 +28,82 @@ app.use((req, _res, next) => {
   next();
 });
 
-const currentUser = (req: express.Request) => {
+
+/**
+ * Creates the admin account from the environment, once.
+ *
+ * create-admin writes to the local file, which is not the store a deployed
+ * function reads, so the deployed site would otherwise have no way in. Setting
+ * ADMIN_USERNAME and ADMIN_PASSWORD in Netlify makes the account appear on the
+ * first request that needs it.
+ *
+ * It only ever creates a missing admin. Changing the variables later does not
+ * change an existing password, so a stale value in the dashboard cannot
+ * silently reset the account.
+ */
+let adminChecked = false;
+async function ensureAdmin(): Promise<void> {
+  if (adminChecked) return;
+  adminChecked = true;
+
+  const username = process.env.ADMIN_USERNAME || 'Admin';
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password) return;
+
+  try {
+    if (await findByUsername(username)) return;
+    await addUser({
+      username,
+      email: process.env.ADMIN_EMAIL || 'admin@gmail.com',
+      passwordHash: hashPassword(password),
+      fullName: 'Administrator',
+      city: '',
+      instagram: '',
+      isAdmin: true,
+    });
+    console.log(`Created the admin account "${username}" from the environment.`);
+  } catch {
+    // Another instance won the race and made it first, which is the outcome
+    // either way.
+  }
+}
+
+app.use(async (_req, _res, next) => {
+  await ensureAdmin();
+  next();
+});
+
+const currentUser = async (req: express.Request) => {
   const id = readSession((req as any).cookies?.[SESSION_COOKIE]);
-  return id ? findById(id) : undefined;
+  return id ? await findById(id) : undefined;
 };
 
 /** What the browser is allowed to know about a member. Never the hash. */
-const publicUser = (u: NonNullable<ReturnType<typeof findById>>) => ({
+const publicUser = (u: User) => ({
   id: u.id, username: u.username, email: u.email, fullName: u.fullName,
   city: u.city, instagram: u.instagram, isAdmin: u.isAdmin, createdAt: u.createdAt,
 });
 
 const GMAIL = /^[a-z0-9._%+-]+@gmail\.com$/i;
 
-app.post('/api/signup', (req, res) => {
+/**
+ * Marked secure everywhere but plain local http.
+ *
+ * NODE_ENV is not set on Netlify, so keying it on that left the session
+ * cookie unmarked on a live https site — where a browser may refuse it
+ * outright once anything else on the page sets SameSite=None.
+ */
+function setSessionCookie(res: express.Response, session: { value: string; maxAge: number }) {
+  res.cookie(SESSION_COOKIE, session.value, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: onNetlify || process.env.NODE_ENV === 'production',
+    maxAge: session.maxAge,
+    path: '/',
+  });
+}
+
+app.post('/api/signup', async (req, res) => {
   const { username = '', email = '', password = '', fullName = '', city = '', instagram = '' } = req.body ?? {};
 
   const name = String(username).trim();
@@ -54,30 +116,39 @@ app.post('/api/signup', (req, res) => {
 
   // Checked before writing, and case-insensitively: "Admin" and "admin" are
   // the same name to a person, so they must be the same name here.
-  if (findByUsername(name)) return res.status(409).json({ error: 'That username is already taken.' });
-  if (findByEmail(mail)) return res.status(409).json({ error: 'That Gmail address is already registered.' });
+  if (await findByUsername(name)) return res.status(409).json({ error: 'That username is already taken.' });
+  if (await findByEmail(mail)) return res.status(409).json({ error: 'That Gmail address is already registered.' });
 
-  const user = addUser({
-    username: name,
-    email: mail,
-    passwordHash: hashPassword(String(password)),
-    fullName: String(fullName).trim(),
-    city: String(city).trim(),
-    instagram: String(instagram).trim(),
-    isAdmin: false,
-  });
+  let user;
+  try {
+    user = await addUser({
+      username: name,
+      email: mail,
+      passwordHash: hashPassword(String(password)),
+      fullName: String(fullName).trim(),
+      city: String(city).trim(),
+      instagram: String(instagram).trim(),
+      isAdmin: false,
+    });
+  } catch (e: any) {
+    // The store checks again as it writes, because two signups can both read
+    // "free" before either writes.
+    if (e?.message === 'USERNAME_TAKEN') return res.status(409).json({ error: 'That username is already taken.' });
+    if (e?.message === 'EMAIL_TAKEN') return res.status(409).json({ error: 'That Gmail address is already registered.' });
+    throw e;
+  }
 
   const session = createSession(user.id);
-  res.cookie(SESSION_COOKIE, session.value, { httpOnly: true, sameSite: 'lax', maxAge: session.maxAge });
+  setSessionCookie(res, session);
   res.json(publicUser(user));
 });
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { identifier = '', password = '' } = req.body ?? {};
   const id = String(identifier).trim();
 
   // Either handle works, because people remember one or the other.
-  const user = findByUsername(id) ?? findByEmail(id);
+  const user = (await findByUsername(id)) ?? (await findByEmail(id));
 
   // One message for both cases on purpose: saying which half was wrong tells
   // a stranger whether a username exists.
@@ -86,7 +157,7 @@ app.post('/api/login', (req, res) => {
   }
 
   const session = createSession(user.id);
-  res.cookie(SESSION_COOKIE, session.value, { httpOnly: true, sameSite: 'lax', maxAge: session.maxAge });
+  setSessionCookie(res, session);
   res.json(publicUser(user));
 });
 
@@ -95,38 +166,51 @@ app.post('/api/logout', (_req, res) => {
   res.json({ ok: true });
 });
 
-app.get('/api/me', (req, res) => {
-  const user = currentUser(req);
+app.get('/api/me', async (req, res) => {
+  const user = await currentUser(req);
   if (!user) return res.status(401).json({ error: 'Not signed in.' });
   res.json(publicUser(user));
 });
 
-app.get('/api/admin/members', (req, res) => {
-  const user = currentUser(req);
+app.get('/api/admin/members', async (req, res) => {
+  const user = await currentUser(req);
   if (!user?.isAdmin) return res.status(403).json({ error: 'Admins only.' });
+  const everyone = await allUsers();
   res.json(
-    allUsers()
+    everyone
       .filter(u => !u.isAdmin)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .map(publicUser)
   );
 });
 
-app.delete('/api/admin/members/:id', (req, res) => {
-  const user = currentUser(req);
+app.delete('/api/admin/members/:id', async (req, res) => {
+  const user = await currentUser(req);
   if (!user?.isAdmin) return res.status(403).json({ error: 'Admins only.' });
 
-  const target = findById(req.params.id);
+  const target = await findById(req.params.id);
   if (!target) return res.status(404).json({ error: 'No such member.' });
   // Removing an admin would leave nobody able to see the list.
   if (target.isAdmin) return res.status(400).json({ error: 'Admin accounts cannot be removed here.' });
 
-  deleteUser(req.params.id);
+  await deleteUser(req.params.id);
   res.json({ ok: true });
 });
 
-app.listen(PORT, () => {
-  console.log(`API on http://localhost:${PORT}`);
-  const admins = allUsers().filter(u => u.isAdmin).length;
-  if (admins === 0) console.log('No admin account yet — run: pnpm run create-admin');
-});
+if (onNetlify && !process.env.SESSION_SECRET) {
+  // Without it the signing key is random per cold start, so everybody is
+  // signed out at unpredictable moments and nobody can tell why.
+  console.warn('SESSION_SECRET is not set. Sign-ins will not survive a cold start.');
+}
+
+export default app;
+
+// Only when run directly. On Netlify the app is wrapped by a function instead,
+// and a listening socket there would do nothing but hold the process open.
+if (!onNetlify) {
+  app.listen(PORT, async () => {
+    console.log(`API on http://localhost:${PORT}`);
+    const admins = (await allUsers()).filter(u => u.isAdmin).length;
+    if (admins === 0) console.log('No admin account yet. Run: pnpm run create-admin');
+  });
+}
