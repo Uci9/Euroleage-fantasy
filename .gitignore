@@ -1,6 +1,8 @@
 node_modules/
 dist/
 data/
+.netlify/
+deno.lock
 *.tsbuildinfo
 .env
 .env.*

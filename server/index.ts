@@ -203,6 +203,18 @@ if (onNetlify && !process.env.SESSION_SECRET) {
   console.warn('SESSION_SECRET is not set. Sign-ins will not survive a cold start.');
 }
 
+/**
+ * Anything unhandled comes back as JSON.
+ *
+ * Express answers an uncaught error with an HTML page, which the browser reads
+ * as "not JSON" and reports as a network fault — sending the reader looking
+ * for a connection problem when the server answered perfectly well.
+ */
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error(err);
+  res.status(500).json({ error: err?.message ?? 'Something went wrong on the server.' });
+});
+
 export default app;
 
 // Only when run directly. On Netlify the app is wrapped by a function instead,

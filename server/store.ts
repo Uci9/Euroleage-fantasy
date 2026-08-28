@@ -37,27 +37,53 @@ const EMPTY: Db = { users: [] };
 /** Netlify sets these for every function; nothing else does. */
 export const onNetlify = Boolean(process.env.NETLIFY || process.env.NETLIFY_BLOBS_CONTEXT);
 
+/**
+ * Which backing to use.
+ *
+ * Normally decided by where the code runs. STORE=file overrides it, which is
+ * how the function can be exercised locally: blob emulation needs a linked
+ * site, and everything else about the function is worth testing without one.
+ */
+const useBlobs = onNetlify && process.env.STORE !== 'file';
+
 // ── File backing ────────────────────────────────────────────────────────────
-const DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
-const FILE = join(DIR, 'db.json');
+/**
+ * Worked out on first use, not at import.
+ *
+ * Netlify bundles the function to CommonJS, where import.meta.url is
+ * undefined — and computing this at import time threw before a single request
+ * was handled, on a path the deployed site never even uses.
+ */
+let paths: { dir: string; file: string } | null = null;
+function filePaths() {
+  if (paths) return paths;
+  const here = typeof import.meta?.url === 'string'
+    ? dirname(fileURLToPath(import.meta.url))
+    : process.cwd();
+  const dir = join(here, '..', 'data');
+  paths = { dir, file: join(dir, 'db.json') };
+  return paths;
+}
 
 function readFile(): Db {
-  if (!existsSync(FILE)) return { users: [] };
+  const { file } = filePaths();
+  if (!existsSync(file)) return { users: [] };
   try {
-    const parsed = JSON.parse(readFileSync(FILE, 'utf8'));
+    const parsed = JSON.parse(readFileSync(file, 'utf8'));
     return Array.isArray(parsed?.users) ? parsed : { users: [] };
   } catch {
-    // A corrupt file must not be silently replaced with an empty one — that
+    // A corrupt file must not be silently replaced with an empty one, which
     // would delete the member list on the next write.
-    throw new Error(`Could not read ${FILE}. Fix or move the file before starting again.`);
+    throw new Error(`Could not read ${file}. Fix or move the file before starting again.`);
   }
 }
 
 function writeFileDb(db: Db): void {
-  if (!existsSync(DIR)) mkdirSync(DIR, { recursive: true });
-  const tmp = `${FILE}.${randomUUID()}.tmp`;
+  const { dir, file } = filePaths();
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  const tmp = `${file}.${randomUUID()}.tmp`;
   writeFileSync(tmp, JSON.stringify(db, null, 2), 'utf8');
-  renameSync(tmp, FILE);
+  renameSync(tmp, file);
 }
 
 // ── Blob backing ────────────────────────────────────────────────────────────
@@ -82,12 +108,24 @@ async function writeBlob(db: Db): Promise<void> {
 
 // ── One interface over both ─────────────────────────────────────────────────
 async function read(): Promise<Db> {
-  return onNetlify ? readBlob() : readFile();
+  if (!useBlobs) return readFile();
+  try {
+    return await readBlob();
+  } catch (e: any) {
+    // Reported as itself rather than as a stack trace the browser reads as a
+    // network fault: a missing blob store is a setup problem, and saying so is
+    // the difference between a five-minute fix and an afternoon.
+    throw new Error(`Cannot reach the member store. ${e?.message ?? e}`);
+  }
 }
 
 async function write(db: Db): Promise<void> {
-  if (onNetlify) await writeBlob(db);
-  else writeFileDb(db);
+  if (!useBlobs) { writeFileDb(db); return; }
+  try {
+    await writeBlob(db);
+  } catch (e: any) {
+    throw new Error(`Cannot write to the member store. ${e?.message ?? e}`);
+  }
 }
 
 /** Case-insensitive, so "Admin" and "admin" cannot both be taken. */
